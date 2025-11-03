@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<psf version="2.0">
+<provider id="org.eclipse.egit.core.GitProvider">
+<project reference="1.0,https://github.com/Elain1312/Mart-nez-Vazquez-Giardelli-Herrera-tp-p1,main,."/>
+</provider>
+</psf>
