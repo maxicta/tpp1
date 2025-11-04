@@ -1,348 +1,62 @@
-package juego; //prueba
+package juego;
+
+import java.awt.Color;
 
 import entorno.Entorno;
-import entorno.InterfaceJuego;
-import java.io.File;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequencer;
 
-public class Juego extends InterfaceJuego {
+public class Tiempo {
+    private long inicio = 0;
+    private int minutos;
+    private int segundos;
+    private boolean detenido = false; // Bandera para saber si el tiempo está detenido
+    private int segundosEnPausa = 0;
 
-    private Entorno entorno;
-    private Regalo[] regalos;
-    private Zombie[] zombies;
-    private Planta[] plantas;
-    private BolaDeFuego[] bolasDeFuego;
-    private Cesped cesped;
-    private Nuez[] nuez;
-    private int[] contadorDisparoPlantas;
-    private int totalZombiesCreados = 0;
-	private Eliminados eliminados;
-	private Restantes restantes;
-	private Tiempo tiempo;
-
-    Juego()    	
-        this.entorno = new Entorno(this, "La Invasión de los Zombies", 800, 600);
-        try {
-            Sequencer sequencer = MidiSystem.getSequencer();
-            sequencer.open();
-            sequencer.setSequence(MidiSystem.getSequence(new File("sonidos/Mision_Imposible.mid")));
-            sequencer.start();
-        } catch (Exception e) {
-            System.out.println("Error al reproducir MIDI: " + e.getMessage());
-			
-        this.zombies = new Zombie[75];
-        this.cesped = new Cesped(400, 300, 0, 0);
-        this.regalos = new Regalo[5];
-        this.plantas = new Planta[5];
-        this.bolasDeFuego = new BolaDeFuego[100];
-        this.contadorDisparoPlantas = new int[plantas.length];
-        this.nuez = new Nuez[5];
-		this.setEliminados(new Eliminados());
-		this.setRestantes(new Restantes());
-		this.setTiempo(new Tiempo());
-
-        for (int i = 0; i < this.plantas.length; i++) {
-            this.plantas[i] = new Planta(70, 80, 40, 40, 0, false, false);
-        }
-
- 
-        int[] filasY = {220, 270, 340, 400, 460};
-        for (int i = 0; i < this.regalos.length; i++) {
-            this.regalos[i] = new Regalo(230, filasY[i], 80, 80, true);
-        }
-
-
-        for (int i = 0; i < this.nuez.length; i++) {
-            this.nuez[i] = new Nuez(160, 80, 80, 80, 0, false, false);
-        }
-
-        this.entorno.iniciar();
+    public Tiempo() {
+        this.segundos = 0;
+        this.minutos = 0;
     }
 
-
-	public void tick() {
-        this.cesped.dibujar(this.entorno);
-		this.eliminados.dibujar(entorno);
-		restantes.dibujar(entorno);
-		tiempo.dibujar(entorno);
-		
-		
-		
-
-        // Disponibilidad aleatoria de las plantas
-        if (Math.random() < 1) {
-            for (Planta p : this.plantas) {
-                if (p != null) p.disponible();
-            }
-        }
-
-        // Aparición aleatoria de  los zombies
-        if (Math.random() < 0.003) {
-            agregarZombie();
-        }
-
-        for (int i = 0; i < zombies.length; i++) {
-            if (zombies[i] != null) {
-                zombies[i].mover();
-                zombies[i].dibujar(entorno);
-
-                if (zombies[i].getX() < -50) {
-                    zombies[i] = null;
-                }
-            }
-        }
-
-        // Plantas
-        for (int i = 0; i < plantas.length; i++) {
-            if (plantas[i] != null) {
-                Planta p = plantas[i];
-                p.dibujar(entorno);
-
-                if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)
-                        && this.cursorDentro(p, entorno.mouseX(), entorno.mouseY(), 20)) {
-                    p.setSeleccionada();
-                    break;
-                }
-
-                if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)
-                        && !this.cursorDentro(p, entorno.mouseX(), entorno.mouseY(), 20)) {
-                    p.setDeseleccionada();
-                }
-
-           
-                if (entorno.estaPresionado(entorno.BOTON_IZQUIERDO) && p.getSeleccionada()) {
-                    p.situarse(entorno.mouseX(), entorno.mouseY());
-                }
-
-    
-                boolean zombieEnLinea = false;
-                for (Zombie z : zombies) {
-                    if (z != null && Math.abs(p.getY() - z.getY()) < 40) {
-                        zombieEnLinea = true;
-                        break;
-                    }
-                }
-
-    
-                contadorDisparoPlantas[i]++;
-                if (zombieEnLinea && contadorDisparoPlantas[i] >= 80) {
-                    contadorDisparoPlantas[i] = 0;
-                    for (int b = 0; b < bolasDeFuego.length; b++) {
-                        if (bolasDeFuego[b] == null) {
-                            bolasDeFuego[b] = new BolaDeFuego(p.getX() + 30, p.getY(), 10, 8, 3);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-   
-        for (int i = 0; i < nuez.length; i++) {  ///////ESTO PARA COLISION NUEZ. VER NUEZ.JAVA
-        	if (nuez[i] != null) {
-                Nuez n = nuez[i];
-                n.dibujar(entorno);
-
-            if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)
-                    && this.cursorDentro(n, entorno.mouseX(), entorno.mouseY(), 20)) {
-                n.setSeleccionada();
-                break;
-            }
-
-            if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)
-                    && !this.cursorDentro(n, entorno.mouseX(), entorno.mouseY(), 20)) {
-                n.setDeseleccionada();
-            }
-
-            if (entorno.estaPresionado(entorno.BOTON_IZQUIERDO) && n.getSeleccionada()) {
-                n.situarse(entorno.mouseX(), entorno.mouseY());
-            }
-        }
-
-        
-        for (int i = 0; i < bolasDeFuego.length; i++) {
-            if (bolasDeFuego[i] != null) {
-                bolasDeFuego[i].dibujar(entorno);
-                bolasDeFuego[i].mover();
-
-                if (bolasDeFuego[i].getX() > 820) {
-                    bolasDeFuego[i] = null;
-                }
-            }
-        }
-
- 
-        for (int i = 0; i < regalos.length; i++) {
-            if (regalos[i] != null) {
-                regalos[i].dibujar(entorno);
-
-                for (Zombie z : zombies) {
-                    if (z != null) {
-                        double dx = regalos[i].getx() - z.getX();
-                        double dy = regalos[i].gety() - z.getY();
-                        double distancia = Math.sqrt(dx * dx + dy * dy);
-
-                        if (distancia < 10) {
-                            regalos[i] = null;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Colisiones bolas de fuego - zombies
-        for (int i = 0; i < bolasDeFuego.length; i++) {
-            if (bolasDeFuego[i] != null) {
-                for (int j = 0; j < zombies.length; j++) {
-                    if (zombies[j] != null) {
-                        double dx = bolasDeFuego[i].getX() - zombies[j].getX();
-                        double dy = bolasDeFuego[i].getY() - zombies[j].getY();
-                        double distancia = Math.sqrt(dx * dx + dy * dy);
-
-                        if (distancia < 60) {
-                            zombies[j].setSalud();
-                            bolasDeFuego[i] = null;
-
-                            if (zombies[j].getSalud() <= 0) {
-                                zombies[j] = null;
-								eliminados.sumarZombie(); // agregue contador de zombies eliminados
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Colisiones zombies - plantas
-        for (int j = 0; j < zombies.length; j++) {
-            if (zombies[j] != null) {
-                if (zombies[j].estaComiendo()) {
-                    zombies[j].actualizarComida();
-                    zombies[j].dibujar(entorno);
-                } else {
-                    zombies[j].mover();
-                    zombies[j].dibujar(entorno);
-
-                    for (int i = 0; i < plantas.length; i++) {
-                        if (plantas[i] != null) {
-                            double dx = plantas[i].getX() - zombies[j].getX();
-                            double dy = plantas[i].getY() - zombies[j].getY();
-                            double distancia = Math.sqrt(dx * dx + dy * dy);
-
-                            if (distancia < 20) {
-                                zombies[j].empezarAComer();
-                                plantas[i] = null;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    // Colisiones zombies - nueces.
-	
-		for (int j = 0; j < zombies.length; j++) {
-			if (zombies[j] != null) {
-				if (zombies[j].estaComiendo()) {
-					zombies[j].actualizarComida();
-					zombies[j].dibujar(entorno);
-				} else {
-					zombies[j].mover();
-					zombies[j].dibujar(entorno);
-
-					for (int i = 0; i < nuez.length; i++) {
-						if (nuez[i] != null) {
-							double dx = nuez[i].getX() - zombies[j].getX();
-							double dy = nuez[i].getY() - zombies[j].getY();
-							double distancia = Math.sqrt(dx * dx + dy * dy);
-
-							if (distancia < 20) {
-								zombies[j].empezarAComer();
-								nuez[i] = null;
-								break;
-
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	    }
-	}
-   
-    public boolean cursorDentro(Planta a, int mx, int my, int d) {
-        return ((a.getX() - mx) * (a.getX() - mx) + (a.getY() - my) * (a.getY() - my)) < d * d;
-    }
-
-    public boolean cursorDentro(Nuez a, int mx, int my, int d) {
-        return ((a.getX() - mx) * (a.getX() - mx) + (a.getY() - my) * (a.getY() - my)) < d * d;
-    }
-
-
-    private void agregarZombie() {
-        for (int i = 0; i < zombies.length; i++) {
-            if (zombies[i] == null) {
-                double x = 800;
-				int[] filasY = {220, 270, 340, 400, 460};
-				double y = filasY[(int) (Math.random() * filasY.length)]; // 220, 270, 340, 400, 460
-
-                Zombie nuevoZombie;
-                if (totalZombiesCreados == 4 || totalZombiesCreados == 44
-                        || totalZombiesCreados == 59 || totalZombiesCreados == 74) {
-                    nuevoZombie = new Zombie(x, y, 100, 0.7, 10, 0.4);
-                } else {
-                    nuevoZombie = new Zombie(x, y, 80, 0.6, 3, 0.2);
-                }
-
-                zombies[i] = nuevoZombie;
-                totalZombiesCreados++;
-                break;
-            }
+    public void iniciar() {
+        if (inicio == 0) { // Solo se inicializa una vez, en el primer tick
+            inicio = System.currentTimeMillis(); // Marca el momento real de inicio del juego
         }
     }
 
-    public static void main(String[] args) {
-        new Juego();
-    }
-    public Cesped getCesped() {
-        return cesped;
+    public void detener() {
+        detenido = true; // Activa la bandera de tiempo detenido
+        segundosEnPausa = segundosTranscurridos(); // Guarda el tiempo actual para congelarlo
     }
 
-    public void setCesped(Cesped cesped) {
-        this.cesped = cesped;
+    public int segundosTranscurridos() {
+        if (detenido) {
+            return segundosEnPausa; // Si está detenido, devuelve el tiempo congelado
+        }
+        long ahora = System.currentTimeMillis(); // Tiempo actual
+        return (int) ((ahora - inicio) / 1000); // Diferencia en segundos desde el inicio
     }
 
-    public Eliminados getEliminados() {
-        return eliminados;
+    public void dibujar(Entorno entorno) {
+        iniciar(); // Asegura que el tiempo esté inicializado
+
+        int totalSegundos = segundosTranscurridos();
+        minutos = totalSegundos / 60;
+        segundos = totalSegundos % 60;
+
+        entorno.cambiarFont("Arial", 20, Color.BLACK);
+        entorno.escribirTexto(String.format(" %02ds%2dm", segundos, minutos), 390, 110); // muestra segundos y minutos
     }
 
-    public void setEliminados(Eliminados eliminados) {
-        this.eliminados = eliminados;
+    public void reiniciar() {
+        inicio = System.currentTimeMillis(); // Reinicia el tiempo desde cero
+        detenido = false;
+        segundosEnPausa = 0;
     }
 
-    public Restantes getRestantes() {
-        return restantes;
+    public boolean isDetenido() {
+        return detenido;
     }
 
-    public void setRestantes(Restantes restantes) {
-        this.restantes = restantes;
-    }
-
-    public Tiempo getTiempo() {
-        return tiempo;
-    }
-
-    public void setTiempo(Tiempo tiempo) {
-        this.tiempo = tiempo;
+    public void setDetenido(boolean detenido) {
+        this.detenido = detenido;
     }
 }
-
-
-
-
-
-
-
