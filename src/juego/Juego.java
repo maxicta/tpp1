@@ -29,7 +29,7 @@ public class Juego extends InterfaceJuego {
         this.contadorDisparoPlantas = new int[plantas.length];
         this.nuez = new Nuez[5];
 		this.setEliminados(new Eliminados());
-		this.setRestantes(new Restantes());
+		this.restantes = new Restantes( this.zombies.length );
 		this.setTiempo(new Tiempo());
 
         for (int i = 0; i < this.plantas.length; i++) {
@@ -54,7 +54,7 @@ public class Juego extends InterfaceJuego {
 	public void tick() {
         this.cesped.dibujar(this.entorno);
 		this.eliminados.dibujar(entorno);
-		restantes.dibujar(entorno);
+		this.restantes.dibujar(entorno);
 		tiempo.dibujar(entorno);
 		
 		
@@ -76,6 +76,7 @@ public class Juego extends InterfaceJuego {
             if (zombies[i] != null) {
                 zombies[i].mover();
                 zombies[i].dibujar(entorno);
+                
 
                 if (zombies[i].getX() < -50) {
                     zombies[i] = null;
@@ -246,6 +247,8 @@ public class Juego extends InterfaceJuego {
     private void agregarZombie() {
         for (int i = 0; i < zombies.length; i++) {
             if (zombies[i] == null) {
+            	this.restantes.restarZombie();
+
                 double x = 800;
 				int[] filasY = {220, 270, 340, 400, 460};
 				double y = filasY[(int) (Math.random() * filasY.length)]; // 220, 270, 340, 400, 460

@@ -24,7 +24,7 @@ public class Tiempo {
 		segundos = totalSegundos % 60;
 
 		entorno.cambiarFont("Arial", 20, Color.BLACK);
-		entorno.escribirTexto("" + segundos + "s" + minutos + "m ", 400, 110);
+		entorno.escribirTexto(minutos + "m " + "" + segundos + "s" ,400, 110);
 
 	}
 

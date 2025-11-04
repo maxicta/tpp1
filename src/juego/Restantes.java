@@ -7,8 +7,8 @@ import entorno.Entorno;
 public class Restantes {
 	private int contador;
 
-	public Restantes() {
-		this.contador = 0;
+	public Restantes(int r) {
+		this.contador = r;
 	}
 
 	public void sumarZombie() {
