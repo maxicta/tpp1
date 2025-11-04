@@ -2,6 +2,9 @@ package juego; //prueba
 
 import entorno.Entorno;
 import entorno.InterfaceJuego;
+import java.io.File;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequencer;
 
 public class Juego extends InterfaceJuego {
 
@@ -18,9 +21,16 @@ public class Juego extends InterfaceJuego {
 	private Restantes restantes;
 	private Tiempo tiempo;
 
-    Juego() {
-    	
+    Juego()    	
         this.entorno = new Entorno(this, "La Invasión de los Zombies", 800, 600);
+        try {
+            Sequencer sequencer = MidiSystem.getSequencer();
+            sequencer.open();
+            sequencer.setSequence(MidiSystem.getSequence(new File("sonidos/Mision_Imposible.mid")));
+            sequencer.start();
+        } catch (Exception e) {
+            System.out.println("Error al reproducir MIDI: " + e.getMessage());
+			
         this.zombies = new Zombie[75];
         this.cesped = new Cesped(400, 300, 0, 0);
         this.regalos = new Regalo[5];
