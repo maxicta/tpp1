@@ -233,7 +233,35 @@ public class Juego extends InterfaceJuego {
             }
         }
     }
+    // Colisiones zombies - nueces.
+	
+		for (int j = 0; j < zombies.length; j++) {
+			if (zombies[j] != null) {
+				if (zombies[j].estaComiendo()) {
+					zombies[j].actualizarComida();
+					zombies[j].dibujar(entorno);
+				} else {
+					zombies[j].mover();
+					zombies[j].dibujar(entorno);
 
+					for (int i = 0; i < nuez.length; i++) {
+						if (nuez[i] != null) {
+							double dx = nuez[i].getX() - zombies[j].getX();
+							double dy = nuez[i].getY() - zombies[j].getY();
+							double distancia = Math.sqrt(dx * dx + dy * dy);
+
+							if (distancia < 20) {
+								zombies[j].empezarAComer();
+								nuez[i] = null;
+								break;
+
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+	}
    
     public boolean cursorDentro(Planta a, int mx, int my, int d) {
         return ((a.getX() - mx) * (a.getX() - mx) + (a.getY() - my) * (a.getY() - my)) < d * d;
