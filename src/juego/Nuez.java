@@ -15,6 +15,7 @@ public class Nuez {
 	private boolean seleccionada;
 	private boolean disponible;
 	private Image imgNuez;
+	private int salud = 50;
 
 	public Nuez(int x, int y, int alto, int ancho, int vida, boolean disponible, boolean seleccionada) {
 		this.x = x;
@@ -24,6 +25,12 @@ public class Nuez {
 		this.imgNuez = Herramientas.cargarImagen("imagenes/nuez.gif");
 	}
 	
+	public void recibirDanio(int d) { /////////////AGREGADO
+	    salud -= d;
+	}
+	public boolean estaDestruida() { /////////////////AGREGADO
+	    return salud <= 0;
+	}
 	public double getX() {
 		return x;
 	}
