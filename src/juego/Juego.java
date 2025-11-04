@@ -129,9 +129,10 @@ public class Juego extends InterfaceJuego {
         }
 
    
-        for (int i = 0; i < nuez.length; i++) {
-            Nuez n = nuez[i];
-            n.dibujar(entorno);
+        for (int i = 0; i < nuez.length; i++) {  ///////ESTO PARA COLISION NUEZ. VER NUEZ.JAVA
+        	if (nuez[i] != null) {
+                Nuez n = nuez[i];
+                n.dibujar(entorno);
 
             if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)
                     && this.cursorDentro(n, entorno.mouseX(), entorno.mouseY(), 20)) {
