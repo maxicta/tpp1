@@ -292,9 +292,9 @@ public class Juego extends InterfaceJuego {
                 Zombie nuevoZombie;
                 if (totalZombiesCreados == 4 || totalZombiesCreados == 44
                         || totalZombiesCreados == 59 || totalZombiesCreados == 74) {
-                    nuevoZombie = new Zombie(x, y, 100, 0.7, 10, 0.5);
+                    nuevoZombie = new Zombie(x, y, 100, 0.7, 10, 0.4);
                 } else {
-                    nuevoZombie = new Zombie(x, y, 80, 0.6, 3, 1.0);
+                    nuevoZombie = new Zombie(x, y, 80, 0.6, 3, 0.2);
                 }
 
                 zombies[i] = nuevoZombie;
