@@ -1,4 +1,4 @@
-package juego;
+package juego; //prueba
 
 import entorno.Entorno;
 import entorno.InterfaceJuego;
