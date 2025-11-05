@@ -1,7 +1,10 @@
 package juego;
 
+import entorno.Herramientas;
 import entorno.Entorno;
 import entorno.InterfaceJuego;
+import java.awt.Image;
+
 
 public class Juego extends InterfaceJuego {
 
@@ -17,14 +20,22 @@ public class Juego extends InterfaceJuego {
 	private Eliminados eliminados;
 	private Restantes restantes;
 	private Tiempo tiempo;
+	private Image imgGanaste; // IMAGEN GANASTE
+	private boolean ganasteFin = false; // AGREGADO
+	private boolean tiempoDetenido = false; // AGREGADO
+	private Image imgPerdiste; // IMAGEN PERDISTE
+	private boolean perdisteFin = false; // AGREGADO
+	private Zombie z;
 
     Juego() {
     	
         this.entorno = new Entorno(this, "La Invasión de los Zombies", 800, 600);
-        this.zombies = new Zombie[75];
+        this.imgPerdiste = Herramientas.cargarImagen("imagenes/perdiste.png"); // IMAGEN PERDISTE
+		this.imgGanaste = Herramientas.cargarImagen("imagenes/ganaste.png");
+        this.zombies = new Zombie[15];
         this.cesped = new Cesped(400, 300, 0, 0);
         this.regalos = new Regalo[5];
-        this.plantas = new Planta[5];
+        this.plantas = new Planta[25];
         this.bolasDeFuego = new BolaDeFuego[100];
         this.contadorDisparoPlantas = new int[plantas.length];
         this.nuez = new Nuez[5];
@@ -56,6 +67,26 @@ public class Juego extends InterfaceJuego {
 		this.eliminados.dibujar(entorno);
 		this.restantes.dibujar(entorno);
 		tiempo.dibujar(entorno);
+		
+		if (!tiempoDetenido) { // tiempo del juego
+			tiempo.dibujar(entorno);
+		}
+
+		if (eliminados.getContador() >= this.zombies.length && !ganasteFin) {
+		    tiempoDetenido = true;
+		    tiempo.detener();
+		    ganasteFin = true; // activa el modo victoria
+		}
+		
+
+		if (ganasteFin) {
+			entorno.dibujarImagen(imgGanaste, 400, 300, 0, 1.0);// imagen GANASTE
+			return;
+		}
+		if (perdisteFin) {
+			entorno.dibujarImagen(imgPerdiste, 400, 300, 0, 1.0);// imagen GANASTE
+			return;
+		}
 		
 		
 		
@@ -132,6 +163,7 @@ public class Juego extends InterfaceJuego {
    
         for (int i = 0; i < nuez.length; i++) {
             Nuez n = nuez[i];
+            if (n != null) {
             n.dibujar(entorno);
 
             if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)
@@ -147,6 +179,7 @@ public class Juego extends InterfaceJuego {
 
             if (entorno.estaPresionado(entorno.BOTON_IZQUIERDO) && n.getSeleccionada()) {
                 n.situarse(entorno.mouseX(), entorno.mouseY());
+            }
             }
         }
 
@@ -175,6 +208,7 @@ public class Juego extends InterfaceJuego {
 
                         if (distancia < 10) {
                             regalos[i] = null;
+                            this.perdisteFin = true;
                             break;
                         }
                     }
@@ -232,6 +266,32 @@ public class Juego extends InterfaceJuego {
                 }
             }
         }
+        
+        for (int j = 0; j < zombies.length; j++) {
+			if (zombies[j] != null) {
+				if (zombies[j].estaComiendo()) {
+					zombies[j].actualizarComida();
+					zombies[j].dibujar(entorno);
+				} else {
+					zombies[j].mover();
+					zombies[j].dibujar(entorno);
+
+					for (int i = 0; i < nuez.length; i++) {
+						if (nuez[i] != null) {
+							double dx = nuez[i].getX() - zombies[j].getX();
+							double dy = nuez[i].getY() - zombies[j].getY();
+							double distancia = Math.sqrt(dx * dx + dy * dy);
+
+							if (distancia < 20 && !zombies[j].estaComiendo()) {
+							    zombies[j].empezarAComer();
+							    nuez[i] = null;
+							    break;
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
     }
 
    
