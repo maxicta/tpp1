@@ -42,6 +42,7 @@ public class Juego extends InterfaceJuego {
 		this.setEliminados(new Eliminados());
 		this.restantes = new Restantes( this.zombies.length );
 		this.setTiempo(new Tiempo());
+		this.z = new Zombie(700, 75, 80, 0.6, 3, 1.0);
 
         for (int i = 0; i < this.plantas.length; i++) {
             this.plantas[i] = new Planta(70, 80, 40, 40, 0, false, false);
@@ -102,6 +103,8 @@ public class Juego extends InterfaceJuego {
         if (Math.random() < 0.003) {
             agregarZombie();
         }
+        
+        z.dibujar(entorno);
 
         for (int i = 0; i < zombies.length; i++) {
             if (zombies[i] != null) {
