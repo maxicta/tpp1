@@ -36,7 +36,7 @@ public class Juego extends InterfaceJuego {
 		this.entorno = new Entorno(this, "La Invasión de los Zombies", 800, 600);
 		this.imgPerdiste = Herramientas.cargarImagen("imagenes/perdiste.png"); // IMAGEN PERDISTE
 		this.imgGanaste = Herramientas.cargarImagen("imagenes/ganaste.png");
-		this.zombies = new Zombie[15];
+		this.zombies = new Zombie[75];
 		this.cesped = new Cesped(400, 300, 0, 0);
 		this.regalos = new Regalo[5];
 		this.plantas = new Planta[25];
@@ -328,9 +328,9 @@ public class Juego extends InterfaceJuego {
 				Zombie nuevoZombie;
 				if (totalZombiesCreados == 4 || totalZombiesCreados == 44 || totalZombiesCreados == 59
 						|| totalZombiesCreados == 74) {
-					nuevoZombie = new Zombie(x, y, 100, 0.9, 10, 0.3);
+					nuevoZombie = new Zombie(x, y, 100, 0.9, 10, 0.1);
 				} else {
-					nuevoZombie = new Zombie(x, y, 80, 0.6, 3, 0.5);
+					nuevoZombie = new Zombie(x, y, 80, 0.6, 3, 0.4);
 				}
 
 				zombies[i] = nuevoZombie;
