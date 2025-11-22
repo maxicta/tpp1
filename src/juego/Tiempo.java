@@ -47,7 +47,7 @@ public class Tiempo {
         segundos = totalSegundos % 60;
 
         entorno.cambiarFont("Arial", 20, Color.BLACK);
-        entorno.escribirTexto(String.format(" %02ds%2dm", segundos, minutos), 390, 110); // muestra segundos y minutos
+        entorno.escribirTexto(String.format(" %02dm%2ds", minutos ,segundos), 390, 110); // muestra segundos y minutos
     }
 
     public void reiniciar() {
